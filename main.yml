@@ -1,0 +1,50 @@
+name: Run Selenium Script Every 15 Minutes
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  selenium-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set up Chrome and Chromedriver
+        uses: nanasess/setup-chromedriver@v2
+
+      - name: Run Python Selenium script
+        env:
+          SIGNIN_PAGE: ${{ vars.SIGNIN_PAGE }}
+          WORKING_PAGE: ${{ vars.WORKING_PAGE }}
+          OPTIONS_BUTTON_SELECTOR: ${{ vars.OPTIONS_BUTTON_SELECTOR }}
+          SAVE_BUTTON_SELECTOR: ${{ vars.SAVE_BUTTON_SELECTOR }}
+          LOGIN_FIELD_SELECTOR: ${{ vars.LOGIN_FIELD_SELECTOR }}
+          PASSWORD_FIELD_SELECTOR: ${{ vars.PASSWORD_FIELD_SELECTOR }}
+          CLICK_DELAY: ${{ vars.CLICK_DELAY }}
+
+          LOGIN: ${{ secrets.LOGIN }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: |
+          python main.py

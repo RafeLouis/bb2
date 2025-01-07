@@ -16,4 +16,4 @@ PASSWORD_FIELD_SELECTOR = os.getenv("PASSWORD_FIELD_SELECTOR")
 LOGIN = os.getenv("LOGIN")
 PASSWORD = os.getenv("PASSWORD")
 
-CLICK_DELAY = float(CLICK_DELAY = 1.0)
+CLICK_DELAY = float(os.getenv("CLICK_DELAY", 1.0))
